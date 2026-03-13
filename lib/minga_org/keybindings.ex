@@ -29,6 +29,12 @@ defmodule MingaOrg.Keybindings do
     # SPC m j — move heading down
     bind.(:normal, "SPC m j", :org_move_heading_down, "Move heading down", filetype: :org)
 
+    # TAB — toggle fold at heading
+    bind.(:normal, "TAB", :org_fold_toggle, "Toggle heading fold", filetype: :org)
+
+    # S-TAB — cycle global fold state (overview / show all)
+    bind.(:normal, "S-TAB", :org_fold_cycle_global, "Cycle global folds", filetype: :org)
+
     :ok
   end
 end

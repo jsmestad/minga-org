@@ -7,6 +7,7 @@ defmodule MingaOrg.Commands do
   """
 
   alias MingaOrg.Checkbox
+  alias MingaOrg.Folding
   alias MingaOrg.Heading
   alias MingaOrg.Todo
 
@@ -55,6 +56,20 @@ defmodule MingaOrg.Commands do
       :org_move_heading_down,
       "Move heading/subtree down",
       &Heading.move_down/1
+    )
+
+    registry.register(
+      registry,
+      :org_fold_toggle,
+      "Toggle fold at heading",
+      &Folding.toggle_at_cursor/1
+    )
+
+    registry.register(
+      registry,
+      :org_fold_cycle_global,
+      "Cycle global fold state",
+      &Folding.cycle_global/1
     )
 
     :ok
