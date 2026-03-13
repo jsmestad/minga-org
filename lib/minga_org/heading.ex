@@ -7,6 +7,8 @@ defmodule MingaOrg.Heading do
   with the sibling above or below.
   """
 
+  alias MingaOrg.Buffer
+
   @doc """
   Promotes the current heading (decreases star count by one).
 
@@ -60,9 +62,9 @@ defmodule MingaOrg.Heading do
   @spec transform_heading(map(), (String.t(), String.t() -> {String.t(), String.t()})) :: map()
   defp transform_heading(state, transform_fn) do
     buf = state.buffers.active
-    {line_num, _col} = Minga.Buffer.Server.cursor(buf)
+    {line_num, _col} = Buffer.cursor(buf)
 
-    case Minga.Buffer.Server.line_at(buf, line_num) do
+    case Buffer.line_at(buf, line_num) do
       {:ok, line_text} ->
         case MingaOrg.Todo.parse_heading(line_text) do
           {:ok, stars, keyword, rest} ->
@@ -85,18 +87,18 @@ defmodule MingaOrg.Heading do
   @spec swap_heading(map(), :up | :down) :: map()
   defp swap_heading(state, direction) do
     buf = state.buffers.active
-    {line_num, _col} = Minga.Buffer.Server.cursor(buf)
-    line_count = Minga.Buffer.Server.line_count(buf)
+    {line_num, _col} = Buffer.cursor(buf)
+    total = Buffer.line_count(buf)
 
-    case Minga.Buffer.Server.line_at(buf, line_num) do
+    case Buffer.line_at(buf, line_num) do
       {:ok, line_text} ->
         case heading_level(line_text) do
           nil ->
             state
 
           level ->
-            subtree_end = find_subtree_end(buf, line_num, level, line_count)
-            do_swap(state, buf, direction, line_num, subtree_end, level, line_count)
+            subtree_end = find_subtree_end(buf, line_num, level, total)
+            do_swap(state, buf, direction, line_num, subtree_end, level, total)
         end
 
       _ ->
@@ -105,7 +107,7 @@ defmodule MingaOrg.Heading do
   end
 
   @spec do_swap(map(), pid(), :up | :down, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer()) :: map()
-  defp do_swap(state, buf, :up, line_num, subtree_end, level, _line_count) do
+  defp do_swap(state, buf, :up, line_num, subtree_end, level, _total) do
     case find_prev_sibling(buf, line_num, level) do
       nil ->
         state
@@ -113,25 +115,25 @@ defmodule MingaOrg.Heading do
       prev_start ->
         prev_end = line_num - 1
         swap_ranges(buf, prev_start, prev_end, line_num, subtree_end)
-        Minga.Buffer.Server.move_to(buf, {prev_start, 0})
+        Buffer.move_to(buf, {prev_start, 0})
         state
     end
   end
 
-  defp do_swap(state, buf, :down, line_num, subtree_end, level, line_count) do
+  defp do_swap(state, buf, :down, line_num, subtree_end, level, total) do
     next_start = subtree_end + 1
 
-    if next_start >= line_count do
+    if next_start >= total do
       state
     else
-      case Minga.Buffer.Server.line_at(buf, next_start) do
+      case Buffer.line_at(buf, next_start) do
         {:ok, next_line} ->
           case heading_level(next_line) do
             ^level ->
-              next_end = find_subtree_end(buf, next_start, level, line_count)
+              next_end = find_subtree_end(buf, next_start, level, total)
               swap_ranges(buf, line_num, subtree_end, next_start, next_end)
               offset = next_end - next_start + 1
-              Minga.Buffer.Server.move_to(buf, {line_num + offset, 0})
+              Buffer.move_to(buf, {line_num + offset, 0})
               state
 
             _ ->
@@ -145,18 +147,18 @@ defmodule MingaOrg.Heading do
   end
 
   @spec find_subtree_end(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) :: non_neg_integer()
-  defp find_subtree_end(buf, start_line, level, line_count) do
-    find_subtree_end_loop(buf, start_line + 1, level, line_count)
+  defp find_subtree_end(buf, start_line, level, total) do
+    find_subtree_end_loop(buf, start_line + 1, level, total)
   end
 
   @spec find_subtree_end_loop(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) :: non_neg_integer()
-  defp find_subtree_end_loop(buf, current, level, line_count) when current < line_count do
-    case Minga.Buffer.Server.line_at(buf, current) do
+  defp find_subtree_end_loop(buf, current, level, total) when current < total do
+    case Buffer.line_at(buf, current) do
       {:ok, line} ->
         case heading_level(line) do
-          nil -> find_subtree_end_loop(buf, current + 1, level, line_count)
+          nil -> find_subtree_end_loop(buf, current + 1, level, total)
           found_level when found_level <= level -> current - 1
-          _deeper -> find_subtree_end_loop(buf, current + 1, level, line_count)
+          _deeper -> find_subtree_end_loop(buf, current + 1, level, total)
         end
 
       _ ->
@@ -164,7 +166,7 @@ defmodule MingaOrg.Heading do
     end
   end
 
-  defp find_subtree_end_loop(_buf, _current, _level, line_count), do: line_count - 1
+  defp find_subtree_end_loop(_buf, _current, _level, total), do: total - 1
 
   @spec find_prev_sibling(pid(), non_neg_integer(), pos_integer()) :: non_neg_integer() | nil
   defp find_prev_sibling(buf, line_num, level) do
@@ -175,7 +177,7 @@ defmodule MingaOrg.Heading do
   defp find_prev_sibling_loop(_buf, line_num, _level) when line_num < 0, do: nil
 
   defp find_prev_sibling_loop(buf, line_num, level) do
-    case Minga.Buffer.Server.line_at(buf, line_num) do
+    case Buffer.line_at(buf, line_num) do
       {:ok, line} ->
         case heading_level(line) do
           nil -> find_prev_sibling_loop(buf, line_num - 1, level)
@@ -191,11 +193,9 @@ defmodule MingaOrg.Heading do
 
   @spec swap_ranges(pid(), non_neg_integer(), non_neg_integer(), non_neg_integer(), non_neg_integer()) :: :ok
   defp swap_ranges(buf, a_start, a_end, b_start, b_end) do
-    # Read both ranges
     a_lines = read_lines(buf, a_start, a_end)
     b_lines = read_lines(buf, b_start, b_end)
 
-    # Replace as a single batch edit (b first since it's later in the document)
     a_text = Enum.join(a_lines, "\n")
     b_text = Enum.join(b_lines, "\n")
 
@@ -207,13 +207,13 @@ defmodule MingaOrg.Heading do
       {{a_start, 0}, {a_end, a_end_col}, b_text}
     ]
 
-    Minga.Buffer.Server.apply_text_edits(buf, edits)
+    Buffer.apply_text_edits(buf, edits)
   end
 
   @spec read_lines(pid(), non_neg_integer(), non_neg_integer()) :: [String.t()]
   defp read_lines(buf, from, to) do
     Enum.map(from..to, fn n ->
-      case Minga.Buffer.Server.line_at(buf, n) do
+      case Buffer.line_at(buf, n) do
         {:ok, text} -> text
         _ -> ""
       end
@@ -237,14 +237,6 @@ defmodule MingaOrg.Heading do
   @spec replace_line(pid(), non_neg_integer(), String.t(), String.t()) :: :ok
   defp replace_line(buf, line_num, old_line, new_line) do
     old_len = String.length(old_line)
-
-    Minga.Buffer.Server.apply_text_edit(
-      buf,
-      line_num,
-      0,
-      line_num,
-      old_len,
-      new_line
-    )
+    Buffer.apply_text_edit(buf, line_num, 0, line_num, old_len, new_line)
   end
 end

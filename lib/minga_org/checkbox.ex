@@ -12,6 +12,8 @@ defmodule MingaOrg.Checkbox do
       - [-] In progress  ->  - [x] In progress
   """
 
+  alias MingaOrg.Buffer
+
   @doc """
   Toggles the checkbox on the current line.
 
@@ -22,9 +24,9 @@ defmodule MingaOrg.Checkbox do
   @spec toggle(map()) :: map()
   def toggle(state) do
     buf = state.buffers.active
-    {line_num, _col} = Minga.Buffer.Server.cursor(buf)
+    {line_num, _col} = Buffer.cursor(buf)
 
-    case Minga.Buffer.Server.line_at(buf, line_num) do
+    case Buffer.line_at(buf, line_num) do
       {:ok, line_text} ->
         case toggle_checkbox_text(line_text) do
           {:ok, new_line} ->
@@ -47,8 +49,6 @@ defmodule MingaOrg.Checkbox do
   """
   @spec toggle_checkbox_text(String.t()) :: {:ok, String.t()} | :no_checkbox
   def toggle_checkbox_text(line) do
-    # Match lines like "  - [ ] text", "  - [x] text", "  * [-] text"
-    # with optional leading whitespace and list markers (-, +, *, or numbered)
     regex = ~r/^(\s*(?:[-+*]|\d+[.)]) )\[([ xX\-])\](.*)$/
 
     case Regex.run(regex, line) do
@@ -73,14 +73,6 @@ defmodule MingaOrg.Checkbox do
   @spec replace_line(pid(), non_neg_integer(), String.t(), String.t()) :: :ok
   defp replace_line(buf, line_num, old_line, new_line) do
     old_len = String.length(old_line)
-
-    Minga.Buffer.Server.apply_text_edit(
-      buf,
-      line_num,
-      0,
-      line_num,
-      old_len,
-      new_line
-    )
+    Buffer.apply_text_edit(buf, line_num, 0, line_num, old_len, new_line)
   end
 end

@@ -14,6 +14,8 @@ defmodule MingaOrg.Todo do
       * Buy groceries         ->  * TODO Buy groceries
   """
 
+  alias MingaOrg.Buffer
+
   @doc """
   Cycles the TODO keyword on the current heading line.
 
@@ -23,9 +25,9 @@ defmodule MingaOrg.Todo do
   @spec cycle(map(), [String.t()]) :: map()
   def cycle(state, keywords) when is_list(keywords) do
     buf = state.buffers.active
-    {line_num, _col} = Minga.Buffer.Server.cursor(buf)
+    {line_num, _col} = Buffer.cursor(buf)
 
-    case Minga.Buffer.Server.line_at(buf, line_num) do
+    case Buffer.line_at(buf, line_num) do
       {:ok, line_text} ->
         if heading?(line_text) do
           new_line = cycle_keyword(line_text, keywords)
@@ -86,7 +88,6 @@ defmodule MingaOrg.Todo do
 
   @spec extract_keyword(String.t()) :: {String.t() | nil, String.t()}
   defp extract_keyword(text) do
-    # Match a TODO-like keyword: all uppercase letters/hyphens at start of text
     case Regex.run(~r/^([A-Z][A-Z\-]+)\s+(.*)$/, text) do
       [_match, keyword, rest] -> {keyword, rest}
       nil -> {nil, text}
@@ -99,7 +100,9 @@ defmodule MingaOrg.Todo do
 
   defp next_keyword(current, keywords) do
     case Enum.find_index(keywords, &(&1 == current)) do
-      nil -> List.first(keywords)
+      nil ->
+        List.first(keywords)
+
       idx ->
         next_idx = idx + 1
 
@@ -118,14 +121,6 @@ defmodule MingaOrg.Todo do
   @spec replace_line(pid(), non_neg_integer(), String.t(), String.t()) :: :ok
   defp replace_line(buf, line_num, old_line, new_line) do
     old_len = String.length(old_line)
-
-    Minga.Buffer.Server.apply_text_edit(
-      buf,
-      line_num,
-      0,
-      line_num,
-      old_len,
-      new_line
-    )
+    Buffer.apply_text_edit(buf, line_num, 0, line_num, old_len, new_line)
   end
 end
