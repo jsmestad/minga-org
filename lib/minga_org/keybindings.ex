@@ -38,6 +38,12 @@ defmodule MingaOrg.Keybindings do
     # M-j — move heading/subtree down
     bind.(:normal, "M-j", :org_move_heading_down, "Move heading down", filetype: :org)
 
+    # ── Links ─────────────────────────────────────────────────────────────────
+
+    # RET / gx — follow link at cursor (Doom Emacs org-open-at-point)
+    bind.(:normal, "RET", :org_follow_link, "Follow link", filetype: :org)
+    bind.(:normal, "g x", :org_follow_link, "Follow link", filetype: :org)
+
     # ── Folding ──────────────────────────────────────────────────────────────
 
     # TAB — toggle fold at heading

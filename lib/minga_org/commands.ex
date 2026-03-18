@@ -9,6 +9,7 @@ defmodule MingaOrg.Commands do
   alias MingaOrg.Checkbox
   alias MingaOrg.Folding
   alias MingaOrg.Heading
+  alias MingaOrg.LinkFollow
   alias MingaOrg.Todo
 
   @doc "Registers all org-mode commands with the given TODO keyword sequence."
@@ -70,6 +71,13 @@ defmodule MingaOrg.Commands do
       :org_fold_cycle_global,
       "Cycle global fold state",
       &Folding.cycle_global/1
+    )
+
+    registry.register(
+      registry,
+      :org_follow_link,
+      "Follow link at cursor",
+      &LinkFollow.follow/1
     )
 
     :ok
