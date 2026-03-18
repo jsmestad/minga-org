@@ -106,7 +106,15 @@ defmodule MingaOrg.Heading do
     end
   end
 
-  @spec do_swap(map(), pid(), :up | :down, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer()) :: map()
+  @spec do_swap(
+          map(),
+          pid(),
+          :up | :down,
+          non_neg_integer(),
+          non_neg_integer(),
+          pos_integer(),
+          non_neg_integer()
+        ) :: map()
   defp do_swap(state, buf, :up, line_num, subtree_end, level, _total) do
     case find_prev_sibling(buf, line_num, level) do
       nil ->
@@ -146,12 +154,14 @@ defmodule MingaOrg.Heading do
     end
   end
 
-  @spec find_subtree_end(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) :: non_neg_integer()
+  @spec find_subtree_end(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) ::
+          non_neg_integer()
   defp find_subtree_end(buf, start_line, level, total) do
     find_subtree_end_loop(buf, start_line + 1, level, total)
   end
 
-  @spec find_subtree_end_loop(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) :: non_neg_integer()
+  @spec find_subtree_end_loop(pid(), non_neg_integer(), pos_integer(), non_neg_integer()) ::
+          non_neg_integer()
   defp find_subtree_end_loop(buf, current, level, total) when current < total do
     case Buffer.line_at(buf, current) do
       {:ok, line} ->
@@ -191,7 +201,13 @@ defmodule MingaOrg.Heading do
     end
   end
 
-  @spec swap_ranges(pid(), non_neg_integer(), non_neg_integer(), non_neg_integer(), non_neg_integer()) :: :ok
+  @spec swap_ranges(
+          pid(),
+          non_neg_integer(),
+          non_neg_integer(),
+          non_neg_integer(),
+          non_neg_integer()
+        ) :: :ok
   defp swap_ranges(buf, a_start, a_end, b_start, b_end) do
     a_lines = read_lines(buf, a_start, a_end)
     b_lines = read_lines(buf, b_start, b_end)

@@ -11,6 +11,7 @@ defmodule MingaOrg.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      aliases: aliases(),
       description: "Org-mode support for the Minga editor",
       package: package(),
       source_url: @source_url,
@@ -44,6 +45,12 @@ defmodule MingaOrg.MixProject do
         "README.md",
         "LICENSE"
       ]
+    ]
+  end
+
+  defp aliases do
+    [
+      lint: ["format --check-formatted", "compile"]
     ]
   end
 

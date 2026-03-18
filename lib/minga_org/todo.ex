@@ -72,7 +72,8 @@ defmodule MingaOrg.Todo do
 
   Returns `{:ok, stars, keyword_or_nil, rest_of_text}` or `:not_heading`.
   """
-  @spec parse_heading(String.t()) :: {:ok, String.t(), String.t() | nil, String.t()} | :not_heading
+  @spec parse_heading(String.t()) ::
+          {:ok, String.t(), String.t() | nil, String.t()} | :not_heading
   def parse_heading(line) do
     case Regex.run(~r/^(\*+) (.*)$/, line) do
       [_match, stars, rest] ->
