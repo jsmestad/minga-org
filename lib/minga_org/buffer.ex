@@ -22,6 +22,18 @@ defmodule MingaOrg.Buffer do
     Minga.Buffer.Server.cursor(buf)
   end
 
+  @doc "Inserts text at the cursor position."
+  @spec insert_char(pid(), String.t()) :: :ok
+  def insert_char(buf, text) do
+    Minga.Buffer.Server.insert_char(buf, text)
+  end
+
+  @doc "Returns the detected filetype atom for this buffer."
+  @spec filetype(pid()) :: atom()
+  def filetype(buf) do
+    Minga.Buffer.Server.filetype(buf)
+  end
+
   @doc "Returns the total number of lines in the buffer."
   @spec line_count(pid()) :: non_neg_integer()
   def line_count(buf) do

@@ -46,6 +46,7 @@ defmodule MingaOrg do
     MingaOrg.Grammar.register()
     MingaOrg.Keybindings.register()
     MingaOrg.Commands.register(todo_keywords)
+    MingaOrg.Advice.register()
 
     {:ok, %{todo_keywords: todo_keywords}}
   end
