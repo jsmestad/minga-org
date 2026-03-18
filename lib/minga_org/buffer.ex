@@ -59,6 +59,18 @@ defmodule MingaOrg.Buffer do
     Minga.Buffer.Server.apply_text_edit(buf, start_line, start_col, end_line, end_col, new_text)
   end
 
+  @doc "Returns a range of lines as a list of strings."
+  @spec get_lines(pid(), non_neg_integer(), non_neg_integer()) :: [String.t()]
+  def get_lines(buf, start_line, count) do
+    Minga.Buffer.Server.get_lines(buf, start_line, count)
+  end
+
+  @doc "Executes a batch of decoration operations atomically."
+  @spec batch_decorations(pid(), (struct() -> struct())) :: :ok
+  def batch_decorations(buf, fun) when is_function(fun, 1) do
+    Minga.Buffer.Server.batch_decorations(buf, fun)
+  end
+
   @doc "Applies multiple text edits in a single call."
   @spec apply_text_edits(pid(), [tuple()]) :: :ok
   def apply_text_edits(buf, edits) do
