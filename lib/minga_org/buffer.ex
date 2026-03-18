@@ -34,6 +34,12 @@ defmodule MingaOrg.Buffer do
     Minga.Buffer.Server.filetype(buf)
   end
 
+  @doc "Returns a range of lines as a list of strings."
+  @spec get_lines(pid(), non_neg_integer(), non_neg_integer()) :: [String.t()]
+  def get_lines(buf, start_line, count) do
+    Minga.Buffer.Server.get_lines(buf, start_line, count)
+  end
+
   @doc "Returns the total number of lines in the buffer."
   @spec line_count(pid()) :: non_neg_integer()
   def line_count(buf) do
