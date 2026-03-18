@@ -44,6 +44,17 @@ defmodule MingaOrg.Keybindings do
     bind.(:normal, "RET", :org_follow_link, "Follow link", filetype: :org)
     bind.(:normal, "g x", :org_follow_link, "Follow link", filetype: :org)
 
+    # ── Export ────────────────────────────────────────────────────────────────
+
+    # SPC m e h — export to HTML
+    bind.(:normal, "SPC m e h", :org_export_html, "Export to HTML", filetype: :org)
+
+    # SPC m e m — export to Markdown
+    bind.(:normal, "SPC m e m", :org_export_markdown, "Export to Markdown", filetype: :org)
+
+    # SPC m e p — export to PDF
+    bind.(:normal, "SPC m e p", :org_export_pdf, "Export to PDF", filetype: :org)
+
     # ── Folding ──────────────────────────────────────────────────────────────
 
     # TAB — toggle fold at heading
