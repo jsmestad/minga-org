@@ -7,6 +7,7 @@ defmodule MingaOrg.Commands do
   """
 
   alias MingaOrg.Checkbox
+  alias MingaOrg.Export
   alias MingaOrg.Folding
   alias MingaOrg.Heading
   alias MingaOrg.LinkFollow
@@ -78,6 +79,27 @@ defmodule MingaOrg.Commands do
       :org_follow_link,
       "Follow link at cursor",
       &LinkFollow.follow/1
+    )
+
+    registry.register(
+      registry,
+      :org_export_html,
+      "Export to HTML",
+      &Export.export_command(&1, "html")
+    )
+
+    registry.register(
+      registry,
+      :org_export_markdown,
+      "Export to Markdown",
+      &Export.export_command(&1, "markdown")
+    )
+
+    registry.register(
+      registry,
+      :org_export_pdf,
+      "Export to PDF",
+      &Export.export_command(&1, "pdf")
     )
 
     :ok
