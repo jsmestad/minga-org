@@ -48,7 +48,8 @@ defmodule MingaOrg.TodoTest do
     end
 
     test "cycles TODO to DONE" do
-      assert "* DONE Buy groceries" = Todo.cycle_keyword("* TODO Buy groceries", @default_keywords)
+      assert "* DONE Buy groceries" =
+               Todo.cycle_keyword("* TODO Buy groceries", @default_keywords)
     end
 
     test "removes DONE (cycles to none)" do

@@ -35,7 +35,14 @@ defmodule MingaOrg.Buffer do
   end
 
   @doc "Replaces a range of text with new text."
-  @spec apply_text_edit(pid(), non_neg_integer(), non_neg_integer(), non_neg_integer(), non_neg_integer(), String.t()) :: :ok
+  @spec apply_text_edit(
+          pid(),
+          non_neg_integer(),
+          non_neg_integer(),
+          non_neg_integer(),
+          non_neg_integer(),
+          String.t()
+        ) :: :ok
   def apply_text_edit(buf, start_line, start_col, end_line, end_col, new_text) do
     Minga.Buffer.Server.apply_text_edit(buf, start_line, start_col, end_line, end_col, new_text)
   end

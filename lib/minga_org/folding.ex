@@ -81,7 +81,9 @@ defmodule MingaOrg.Folding do
 
   # ── Private: heading parsing ───────────────────────────────────────────────
 
-  @spec collect_headings(pid(), non_neg_integer(), non_neg_integer(), [{non_neg_integer(), pos_integer()}]) ::
+  @spec collect_headings(pid(), non_neg_integer(), non_neg_integer(), [
+          {non_neg_integer(), pos_integer()}
+        ]) ::
           [{non_neg_integer(), pos_integer()}]
   defp collect_headings(_buf, line, total, acc) when line >= total do
     Enum.reverse(acc)
@@ -117,7 +119,12 @@ defmodule MingaOrg.Folding do
     end)
   end
 
-  @spec find_heading_end([{non_neg_integer(), pos_integer()}], non_neg_integer(), pos_integer(), non_neg_integer()) ::
+  @spec find_heading_end(
+          [{non_neg_integer(), pos_integer()}],
+          non_neg_integer(),
+          pos_integer(),
+          non_neg_integer()
+        ) ::
           non_neg_integer()
   defp find_heading_end(headings, idx, level, total) do
     rest = Enum.drop(headings, idx + 1)
