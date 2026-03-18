@@ -17,12 +17,23 @@ defmodule MingaOrg.Grammar do
   def register do
     source_dir = source_dir()
     highlights = highlights_path()
+    injections = injections_path()
 
-    Minga.TreeSitter.register_grammar("org", source_dir,
+    opts = [
       highlights: highlights,
       filetype_extensions: [".org"],
       filetype_atom: :org
-    )
+    ]
+
+    # Only include injections if the query file exists
+    opts =
+      if File.exists?(injections) do
+        Keyword.put(opts, :injections, injections)
+      else
+        opts
+      end
+
+    Minga.TreeSitter.register_grammar("org", source_dir, opts)
   end
 
   @doc "Returns the path to the vendored grammar source directory."
@@ -35,6 +46,12 @@ defmodule MingaOrg.Grammar do
   @spec highlights_path() :: String.t()
   def highlights_path do
     Path.join([extension_root(), "queries", "org", "highlights.scm"])
+  end
+
+  @doc "Returns the path to the injection query file."
+  @spec injections_path() :: String.t()
+  def injections_path do
+    Path.join([extension_root(), "queries", "org", "injections.scm"])
   end
 
   @spec extension_root() :: String.t()
