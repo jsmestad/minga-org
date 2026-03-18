@@ -8,6 +8,7 @@ defmodule MingaOrg.Advice do
 
   alias MingaOrg.Buffer
   alias MingaOrg.List
+  alias MingaOrg.Markup
 
   @doc """
   Registers all org-mode advice hooks.
@@ -17,6 +18,14 @@ defmodule MingaOrg.Advice do
   @spec register() :: :ok
   def register do
     Minga.Config.Advice.register(:around, :insert_newline, &smart_newline/2)
+
+    # Refresh inline markup decorations after cursor movement and edits.
+    # :after advice runs after the command completes, so decorations
+    # reflect the new cursor position (revealing delimiters on cursor line).
+    for cmd <- [:move_up, :move_down, :move_left, :move_right, :insert_newline] do
+      Minga.Config.Advice.register(:after, cmd, &Markup.refresh/1)
+    end
+
     :ok
   end
 
