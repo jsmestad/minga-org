@@ -48,11 +48,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout Minga (for type resolution)
-        uses: actions/checkout@v4
-        with:
-          repository: jsmestad/minga
-          path: ../minga
+      - name: Clone Minga (for type resolution)
+        run: git clone --depth 1 https://${{ github.token }}@github.com/jsmestad/minga.git ../minga
 
       - uses: erlef/setup-beam@v1
         with:

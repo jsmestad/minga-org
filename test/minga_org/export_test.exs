@@ -40,7 +40,7 @@ defmodule MingaOrg.ExportTest do
   describe "formats/0" do
     test "returns a non-empty list of format tuples" do
       formats = Export.formats()
-      assert length(formats) > 0
+      assert formats != []
       assert {"html", "HTML"} in formats
       assert {"pdf", "PDF"} in formats
     end

@@ -47,7 +47,7 @@ defmodule MingaOrg.LinkMarkupTest do
       conceals = Enum.filter(descs, &match?({:conceal, _, _, _}, &1))
 
       assert length(highlights) == 1
-      assert length(conceals) == 0
+      assert conceals == []
     end
 
     test "no links produces no descriptors" do

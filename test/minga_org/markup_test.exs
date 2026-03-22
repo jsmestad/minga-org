@@ -29,7 +29,7 @@ defmodule MingaOrg.MarkupTest do
       conceals = Enum.filter(descriptors, &match?({:conceal, _, _}, &1))
 
       assert length(highlights) == 1
-      assert length(conceals) == 0
+      assert conceals == []
     end
 
     test "handles multiple lines with different markup" do
