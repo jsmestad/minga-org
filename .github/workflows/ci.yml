@@ -17,8 +17,15 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    env:
+      MINGA_PATH: ../minga
     steps:
       - uses: actions/checkout@v4
+
+      - name: Clone Minga (for Extension behaviour)
+        run: |
+          git clone --depth 1 https://${{ github.token }}@github.com/jsmestad/minga.git ../minga
+          rm -rf ../minga/zig
 
       - uses: erlef/setup-beam@v1
         with:
@@ -80,8 +87,15 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      MINGA_PATH: ../minga
     steps:
       - uses: actions/checkout@v4
+
+      - name: Clone Minga (for Extension behaviour)
+        run: |
+          git clone --depth 1 https://${{ github.token }}@github.com/jsmestad/minga.git ../minga
+          rm -rf ../minga/zig
 
       - uses: erlef/setup-beam@v1
         with:
@@ -94,8 +108,8 @@ jobs:
           path: |
             deps
             _build
-          key: deps-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
-          restore-keys: deps-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-
+          key: deps-test-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+          restore-keys: deps-test-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-
 
       - run: mix deps.get
       - run: mix test

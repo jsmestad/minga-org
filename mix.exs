@@ -12,7 +12,7 @@ defmodule MingaOrg.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       dialyzer: [
-        plt_add_apps: [:mix],
+        plt_add_apps: [:mix, :minga],
         ignore_warnings: ".dialyzer_ignore.exs"
       ],
       deps: deps(),
@@ -37,7 +37,7 @@ defmodule MingaOrg.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:minga, path: minga_path(), only: :dev},
+      {:minga, path: minga_path(), only: [:dev, :test], runtime: false},
       {:stream_data, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
