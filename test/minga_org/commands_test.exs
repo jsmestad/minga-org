@@ -19,6 +19,7 @@ defmodule MingaOrg.CommandsTest do
       assert :org_fold_toggle in names
       assert :org_fold_cycle_global in names
       assert :org_follow_link in names
+      assert :org_jump_to_tag in names
       assert :org_table_tab in names
       assert :org_table_shift_tab in names
       assert :org_export_html in names
