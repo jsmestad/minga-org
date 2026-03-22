@@ -34,6 +34,8 @@ defmodule MingaOrg.Commands do
       {:org_fold_toggle, "Toggle fold at heading", &Folding.toggle_at_cursor/1},
       {:org_fold_cycle_global, "Cycle global fold state", &Folding.cycle_global/1},
       {:org_follow_link, "Follow link at cursor", &LinkFollow.follow/1},
+      {:org_jump_to_tag, "Jump to tag",
+       fn state -> Minga.Editor.PickerUI.open(state, MingaOrg.TagPicker) end},
       {:org_table_tab, "Table: next cell", &TableCommands.tab/1},
       {:org_table_shift_tab, "Table: previous cell", &TableCommands.shift_tab/1},
       {:org_export, "Export org file",

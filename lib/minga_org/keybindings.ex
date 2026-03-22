@@ -36,6 +36,9 @@ defmodule MingaOrg.Keybindings do
       {:normal, "RET", :org_follow_link, "Follow link", filetype: :org},
       {:normal, "g x", :org_follow_link, "Follow link", filetype: :org},
 
+      # Tags
+      {:normal, "SPC m T", :org_jump_to_tag, "Jump to tag", filetype: :org},
+
       # Export
       {:normal, "SPC m e", :org_export, "Export org file", filetype: :org},
 
