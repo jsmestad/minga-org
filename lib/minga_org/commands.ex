@@ -7,7 +7,6 @@ defmodule MingaOrg.Commands do
   """
 
   alias MingaOrg.Checkbox
-  alias MingaOrg.Export
   alias MingaOrg.Folding
   alias MingaOrg.Heading
   alias MingaOrg.LinkFollow
@@ -37,9 +36,8 @@ defmodule MingaOrg.Commands do
       {:org_follow_link, "Follow link at cursor", &LinkFollow.follow/1},
       {:org_table_tab, "Table: next cell", &TableCommands.tab/1},
       {:org_table_shift_tab, "Table: previous cell", &TableCommands.shift_tab/1},
-      {:org_export_html, "Export to HTML", &Export.export_command(&1, "html")},
-      {:org_export_markdown, "Export to Markdown", &Export.export_command(&1, "markdown")},
-      {:org_export_pdf, "Export to PDF", &Export.export_command(&1, "pdf")}
+      {:org_export, "Export org file",
+       fn state -> Minga.Editor.PickerUI.open(state, MingaOrg.ExportPicker) end}
     ]
   end
 

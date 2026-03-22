@@ -21,9 +21,7 @@ defmodule MingaOrg.CommandsTest do
       assert :org_follow_link in names
       assert :org_table_tab in names
       assert :org_table_shift_tab in names
-      assert :org_export_html in names
-      assert :org_export_markdown in names
-      assert :org_export_pdf in names
+      assert :org_export in names
     end
 
     test "every definition is a {atom, string, function} tuple" do
