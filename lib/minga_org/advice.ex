@@ -11,6 +11,28 @@ defmodule MingaOrg.Advice do
   alias MingaOrg.Markup
   alias MingaOrg.Pretty
 
+  @typedoc "An advice definition: {phase, command, function}."
+  @type advice_def :: {:around | :after | :before, atom(), function()}
+
+  @doc """
+  Returns the list of org-mode advice definitions.
+
+  Each tuple is `{phase, command, function}`.
+  """
+  @spec advice_definitions() :: [advice_def()]
+  def advice_definitions do
+    refresh_commands = [:move_up, :move_down, :move_left, :move_right, :insert_newline]
+
+    around = [{:around, :insert_newline, &smart_newline/2}]
+
+    after_advice =
+      for cmd <- refresh_commands, fun <- [&Markup.refresh/1, &Pretty.refresh/1] do
+        {:after, cmd, fun}
+      end
+
+    around ++ after_advice
+  end
+
   @doc """
   Registers all org-mode advice hooks.
 
@@ -18,14 +40,8 @@ defmodule MingaOrg.Advice do
   """
   @spec register() :: :ok
   def register do
-    Minga.Config.Advice.register(:around, :insert_newline, &smart_newline/2)
-
-    # Refresh decorations after cursor movement and edits.
-    # :after advice runs after the command completes, so decorations
-    # reflect the new cursor position (revealing delimiters on cursor line).
-    for cmd <- [:move_up, :move_down, :move_left, :move_right, :insert_newline] do
-      Minga.Config.Advice.register(:after, cmd, &Markup.refresh/1)
-      Minga.Config.Advice.register(:after, cmd, &Pretty.refresh/1)
+    for {phase, command, fun} <- advice_definitions() do
+      Minga.Config.Advice.register(phase, command, fun)
     end
 
     :ok
@@ -71,13 +87,11 @@ defmodule MingaOrg.Advice do
 
   @spec insert_continuation(pid(), String.t()) :: :ok
   defp insert_continuation(buf, prefix) do
-    # Insert newline + the continuation prefix at cursor position
     Buffer.insert_char(buf, "\n" <> prefix)
   end
 
   @spec replace_with_exit(pid(), non_neg_integer(), String.t()) :: :ok
   defp replace_with_exit(buf, line_num, line_text) do
-    # Replace the entire empty-bullet line with just its indentation
     replacement = List.exit_list_replacement(line_text)
     old_len = String.length(line_text)
     Buffer.apply_text_edit(buf, line_num, 0, line_num, old_len, replacement)
