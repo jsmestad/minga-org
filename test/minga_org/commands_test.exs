@@ -10,6 +10,7 @@ defmodule MingaOrg.CommandsTest do
       defs = Commands.command_definitions(@default_keywords)
       names = Enum.map(defs, &elem(&1, 0))
 
+      assert :org_capture in names
       assert :org_cycle_todo in names
       assert :org_toggle_checkbox in names
       assert :org_promote_heading in names

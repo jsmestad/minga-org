@@ -26,6 +26,8 @@ defmodule MingaOrg.Commands do
   @spec command_definitions([String.t()]) :: [command_def()]
   def command_definitions(todo_keywords) do
     [
+      {:org_capture, "Quick capture",
+       fn state -> Minga.Editor.PickerUI.open(state, MingaOrg.CapturePicker) end},
       {:org_cycle_todo, "Cycle TODO keyword", &Todo.cycle(&1, todo_keywords)},
       {:org_toggle_checkbox, "Toggle checkbox", &Checkbox.toggle/1},
       {:org_promote_heading, "Promote heading (decrease level)", &Heading.promote/1},

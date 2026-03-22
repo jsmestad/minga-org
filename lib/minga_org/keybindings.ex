@@ -22,6 +22,9 @@ defmodule MingaOrg.Keybindings do
   @spec binding_definitions() :: [binding_def()]
   def binding_definitions do
     [
+      # SPC X — quick capture (global, not filetype-scoped)
+      {:normal, "SPC X", :org_capture, "Quick capture", []},
+
       # SPC m — local leader (org commands)
       {:normal, "SPC m t", :org_cycle_todo, "Cycle TODO", filetype: :org},
       {:normal, "SPC m x", :org_toggle_checkbox, "Toggle checkbox", filetype: :org},
