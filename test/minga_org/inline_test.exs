@@ -1,6 +1,8 @@
 defmodule MingaOrg.InlineTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
+  alias MingaOrg.Generators
   alias MingaOrg.Inline
   alias MingaOrg.Inline.Span
 
@@ -180,6 +182,33 @@ defmodule MingaOrg.InlineTest do
 
     test "strikethrough returns strikethrough style" do
       assert [strikethrough: true] = Inline.style_for(:strikethrough)
+    end
+  end
+
+  describe "properties" do
+    property "parsed span positions are within line bounds" do
+      check all(line <- Generators.inline_markup_text()) do
+        line_len = String.length(line)
+
+        for span <- Inline.parse(line) do
+          assert span.start >= 0, "span start #{span.start} is negative"
+          assert span.end_ <= line_len, "span end #{span.end_} exceeds line length #{line_len}"
+          assert span.start < span.end_, "span start #{span.start} >= end #{span.end_}"
+        end
+      end
+    end
+
+    property "parsed spans never overlap" do
+      check all(line <- Generators.inline_markup_text()) do
+        spans = Inline.parse(line) |> Enum.sort_by(& &1.start)
+
+        spans
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.each(fn [a, b] ->
+          assert a.end_ <= b.start,
+                 "spans overlap: #{inspect(a)} and #{inspect(b)}"
+        end)
+      end
     end
   end
 end

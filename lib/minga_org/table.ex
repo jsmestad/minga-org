@@ -78,22 +78,24 @@ defmodule MingaOrg.Table do
   @spec column_widths([row()]) :: [non_neg_integer()]
   def column_widths(rows) do
     data_rows = Enum.filter(rows, &match?({:data, _}, &1))
+    compute_widths(data_rows)
+  end
 
-    if data_rows == [] do
-      []
-    else
-      max_cols = data_rows |> Enum.map(fn {:data, cells} -> length(cells) end) |> Enum.max()
+  @spec compute_widths([{:data, [String.t()]}]) :: [non_neg_integer()]
+  defp compute_widths([]), do: []
 
-      Enum.map(0..(max_cols - 1), fn col_idx ->
-        data_rows
-        |> Enum.map(fn {:data, cells} ->
-          cell = Enum.at(cells, col_idx) || ""
-          String.length(cell)
-        end)
-        |> Enum.max()
-        |> max(1)
+  defp compute_widths(data_rows) do
+    max_cols = data_rows |> Enum.map(fn {:data, cells} -> length(cells) end) |> Enum.max()
+
+    Enum.map(0..(max_cols - 1), fn col_idx ->
+      data_rows
+      |> Enum.map(fn {:data, cells} ->
+        cell = Enum.at(cells, col_idx) || ""
+        String.length(cell)
       end)
-    end
+      |> Enum.max()
+      |> max(1)
+    end)
   end
 
   @doc """
@@ -166,11 +168,11 @@ defmodule MingaOrg.Table do
   @spec cell_at(String.t(), non_neg_integer()) ::
           {:ok, non_neg_integer(), non_neg_integer(), non_neg_integer()} | :not_in_table
   def cell_at(line, cursor_col) do
-    if not table_line?(line) do
-      :not_in_table
-    else
+    if table_line?(line) do
       graphemes = String.graphemes(line)
       find_cell(graphemes, 0, 0, cursor_col)
+    else
+      :not_in_table
     end
   end
 

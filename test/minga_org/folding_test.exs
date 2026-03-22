@@ -118,15 +118,17 @@ defmodule MingaOrg.FoldingTest do
     |> Enum.with_index()
     |> Enum.flat_map(fn {{start_line, level}, idx} ->
       rest = Enum.drop(headings, idx + 1)
-
-      end_line =
-        case Enum.find(rest, fn {_line, l} -> l <= level end) do
-          {next_line, _} -> next_line - 1
-          nil -> total - 1
-        end
+      end_line = find_section_end(rest, level, total)
 
       if end_line > start_line, do: [{start_line, end_line}], else: []
     end)
+  end
+
+  defp find_section_end(rest, level, total) do
+    case Enum.find(rest, fn {_line, l} -> l <= level end) do
+      {next_line, _} -> next_line - 1
+      nil -> total - 1
+    end
   end
 
   @spec find_heading([String.t()], non_neg_integer()) :: non_neg_integer() | nil

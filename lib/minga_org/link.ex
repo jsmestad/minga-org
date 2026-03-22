@@ -93,21 +93,11 @@ defmodule MingaOrg.Link do
   Classifies a URL string into a link type.
   """
   @spec classify_url(String.t()) :: Parsed.link_type()
-  def classify_url(url) do
-    if String.starts_with?(url, "http://") or String.starts_with?(url, "https://") do
-      :external
-    else
-      if String.starts_with?(url, "file:") do
-        :file
-      else
-        if String.starts_with?(url, "*") do
-          :heading
-        else
-          :internal
-        end
-      end
-    end
-  end
+  def classify_url("http://" <> _), do: :external
+  def classify_url("https://" <> _), do: :external
+  def classify_url("file:" <> _), do: :file
+  def classify_url("*" <> _), do: :heading
+  def classify_url(_), do: :internal
 
   # ── Private: parser ────────────────────────────────────────────────────────
 

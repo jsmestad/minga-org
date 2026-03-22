@@ -128,20 +128,17 @@ defmodule MingaOrg.Pretty do
   The cursor line is excluded (raw characters visible for editing).
   """
   @spec compute_decorations([String.t()], non_neg_integer(), config()) :: [descriptor()]
-  def compute_decorations(lines, cursor_line, config \\ default_config()) do
-    if not config.enabled do
-      []
-    else
-      lines
-      |> Enum.with_index()
-      |> Enum.flat_map(fn {line, line_num} ->
-        if line_num == cursor_line do
-          []
-        else
-          decorations_for_line(line, line_num, config)
-        end
-      end)
-    end
+  def compute_decorations(lines, cursor_line, config \\ default_config())
+
+  def compute_decorations(_lines, _cursor_line, %{enabled: false}), do: []
+
+  def compute_decorations(lines, cursor_line, config) do
+    lines
+    |> Enum.with_index()
+    |> Enum.reject(fn {_line, line_num} -> line_num == cursor_line end)
+    |> Enum.flat_map(fn {line, line_num} ->
+      decorations_for_line(line, line_num, config)
+    end)
   end
 
   # ── Private ────────────────────────────────────────────────────────────────

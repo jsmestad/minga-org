@@ -92,20 +92,22 @@ defmodule MingaOrg.Export do
 
     case get_file_path(buf) do
       {:ok, path} ->
-        Task.start(fn ->
-          case export(path, format) do
-            {:ok, output} ->
-              Minga.Editor.log_to_messages("Exported to #{output}")
-
-            {:error, reason} ->
-              Minga.Editor.log_to_messages("Export failed: #{reason}")
-          end
-        end)
-
+        Task.start(fn -> run_export(path, format) end)
         state
 
       :no_file ->
         state
+    end
+  end
+
+  @spec run_export(String.t(), String.t()) :: :ok
+  defp run_export(path, format) do
+    case export(path, format) do
+      {:ok, output} ->
+        Minga.Editor.log_to_messages("Exported to #{output}")
+
+      {:error, reason} ->
+        Minga.Editor.log_to_messages("Export failed: #{reason}")
     end
   end
 

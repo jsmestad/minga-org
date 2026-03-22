@@ -1,6 +1,8 @@
 defmodule MingaOrg.TodoTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
+  alias MingaOrg.Generators
   alias MingaOrg.Todo
 
   @default_keywords ["TODO", "DONE"]
@@ -75,6 +77,37 @@ defmodule MingaOrg.TodoTest do
 
     test "returns non-heading unchanged" do
       assert "not a heading" = Todo.cycle_keyword("not a heading", @default_keywords)
+    end
+  end
+
+  describe "properties" do
+    property "cycling through full keyword sequence plus one returns to original" do
+      # Use the same keywords the generator can produce so the cycle
+      # length is predictable (n keywords + 1 for the "none" state).
+      keywords = ["TODO", "DONE", "IN-PROGRESS", "WAITING"]
+
+      check all(line <- Generators.org_heading()) do
+        cycled =
+          Enum.reduce(1..(length(keywords) + 1), line, fn _i, acc ->
+            Todo.cycle_keyword(acc, keywords)
+          end)
+
+        assert cycled == line
+      end
+    end
+
+    property "parse_heading then rebuild produces the original line" do
+      check all(line <- Generators.org_heading()) do
+        {:ok, stars, keyword, rest} = Todo.parse_heading(line)
+
+        rebuilt =
+          case keyword do
+            nil -> "#{stars} #{rest}"
+            kw -> "#{stars} #{kw} #{rest}"
+          end
+
+        assert rebuilt == line
+      end
     end
   end
 end
