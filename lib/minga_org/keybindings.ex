@@ -43,7 +43,11 @@ defmodule MingaOrg.Keybindings do
 
       # Folding
       {:normal, "TAB", :org_fold_toggle, "Toggle heading fold", filetype: :org},
-      {:normal, "S-TAB", :org_fold_cycle_global, "Cycle global folds", filetype: :org}
+      {:normal, "S-TAB", :org_fold_cycle_global, "Cycle global folds", filetype: :org},
+
+      # Table navigation (insert mode)
+      {:insert, "TAB", :org_table_tab, "Table: next cell", filetype: :org},
+      {:insert, "S-TAB", :org_table_shift_tab, "Table: previous cell", filetype: :org}
     ]
   end
 
