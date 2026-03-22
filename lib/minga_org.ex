@@ -5,40 +5,55 @@ defmodule MingaOrg do
   Provides syntax highlighting, heading folding, TODO cycling, checkbox
   toggling, and org-specific keybindings. Install via your Minga config:
 
-      extension :minga_org, hex: "minga_org", version: "~> 0.1"
-      extension :minga_org, git: "https://github.com/jsmestad/minga-org"
+      extension :minga_org, git: "https://github.com/jsmestad/minga-org",
+        conceal: true,
+        pretty_bullets: true,
+        heading_bullets: ["◉", "○", "◈", "◇"],
+        todo_keywords: ["TODO", "DONE"]
 
   All keybindings are scoped to `SPC m` and only active when editing
   `.org` files.
-
-  ## Extension Callbacks
-
-  This module implements the `Minga.Extension` behaviour. When compiled
-  standalone (for testing or Hex publishing), the behaviour annotation
-  is omitted since Minga modules aren't available. When loaded into a
-  running Minga editor, Minga validates the callbacks at runtime.
   """
 
-  # Provide the default child_spec that Minga's extension supervisor expects.
-  @spec child_spec(keyword()) :: map()
-  def child_spec(config) do
-    %{
-      id: __MODULE__,
-      start: {Agent, :start_link, [fn -> config end]},
-      restart: :permanent,
-      type: :worker
-    }
-  end
+  use Minga.Extension
 
+  option :conceal, :boolean,
+    default: true,
+    description: "Hide markup delimiters and show styled content"
+
+  option :pretty_bullets, :boolean,
+    default: true,
+    description: "Replace heading stars with Unicode bullets"
+
+  option :heading_bullets, :string_list,
+    default: ["◉", "○", "◈", "◇"],
+    description: "Unicode bullets for heading levels (cycles when depth exceeds list length)"
+
+  option :list_bullet, :string,
+    default: "•",
+    description: "Replacement character for list item bullets"
+
+  option :todo_keywords, :string_list,
+    default: ["TODO", "DONE"],
+    description: "TODO keyword cycle sequence"
+
+  option :capture_templates, :any,
+    default: nil,
+    description: "Capture template definitions (nil uses built-in defaults)"
+
+  @impl true
   @spec name() :: :minga_org
   def name, do: :minga_org
 
+  @impl true
   @spec description() :: String.t()
   def description, do: "Org-mode support: syntax highlighting, headings, TODOs, checkboxes"
 
+  @impl true
   @spec version() :: String.t()
   def version, do: "0.1.0"
 
+  @impl true
   @spec init(keyword()) :: {:ok, map()} | {:error, term()}
   def init(config) do
     todo_keywords = Keyword.get(config, :todo_keywords, ["TODO", "DONE"])
