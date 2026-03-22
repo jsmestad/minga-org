@@ -24,33 +24,13 @@ defmodule MingaOrg.TagCommands do
     buf = state.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
-    case find_heading_line(buf, line_num) do
-      {:ok, heading_line_num} ->
-        case Buffer.line_at(buf, heading_line_num) do
-          {:ok, line_text} ->
-            new_line = Tags.toggle_tag(line_text, tag)
-
-            if new_line != line_text do
-              old_len = String.length(line_text)
-
-              Buffer.apply_text_edit(
-                buf,
-                heading_line_num,
-                0,
-                heading_line_num,
-                old_len,
-                new_line
-              )
-            end
-
-            state
-
-          _ ->
-            state
-        end
-
-      :not_heading ->
-        state
+    with {:ok, heading_line_num} <- find_heading_line(buf, line_num),
+         {:ok, line_text} <- Buffer.line_at(buf, heading_line_num) do
+      new_line = Tags.toggle_tag(line_text, tag)
+      maybe_replace_line(buf, heading_line_num, line_text, new_line)
+      state
+    else
+      _ -> state
     end
   end
 
@@ -68,6 +48,14 @@ defmodule MingaOrg.TagCommands do
   end
 
   # ── Private ────────────────────────────────────────────────────────────────
+
+  @spec maybe_replace_line(pid(), non_neg_integer(), String.t(), String.t()) :: :ok
+  defp maybe_replace_line(_buf, _line_num, same, same), do: :ok
+
+  defp maybe_replace_line(buf, line_num, old_line, new_line) do
+    old_len = String.length(old_line)
+    Buffer.apply_text_edit(buf, line_num, 0, line_num, old_len, new_line)
+  end
 
   # Walk upward from cursor to find the nearest heading line.
   @spec find_heading_line(pid(), non_neg_integer()) :: {:ok, non_neg_integer()} | :not_heading

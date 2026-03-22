@@ -134,23 +134,29 @@ defmodule MingaOrg.Heading do
     if next_start >= total do
       state
     else
-      case Buffer.line_at(buf, next_start) do
-        {:ok, next_line} ->
-          case heading_level(next_line) do
-            ^level ->
-              next_end = find_subtree_end(buf, next_start, level, total)
-              swap_ranges(buf, line_num, subtree_end, next_start, next_end)
-              offset = next_end - next_start + 1
-              Buffer.move_to(buf, {line_num + offset, 0})
-              state
+      swap_down(state, buf, line_num, subtree_end, level, total, next_start)
+    end
+  end
 
-            _ ->
-              state
-          end
-
-        _ ->
-          state
-      end
+  @spec swap_down(
+          map(),
+          pid(),
+          non_neg_integer(),
+          non_neg_integer(),
+          pos_integer(),
+          non_neg_integer(),
+          non_neg_integer()
+        ) :: map()
+  defp swap_down(state, buf, line_num, subtree_end, level, total, next_start) do
+    with {:ok, next_line} <- Buffer.line_at(buf, next_start),
+         ^level <- heading_level(next_line) do
+      next_end = find_subtree_end(buf, next_start, level, total)
+      swap_ranges(buf, line_num, subtree_end, next_start, next_end)
+      offset = next_end - next_start + 1
+      Buffer.move_to(buf, {line_num + offset, 0})
+      state
+    else
+      _ -> state
     end
   end
 

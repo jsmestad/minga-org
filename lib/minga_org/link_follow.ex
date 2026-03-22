@@ -98,22 +98,12 @@ defmodule MingaOrg.LinkFollow do
   defp find_heading_line(_buf, line, total, _target) when line >= total, do: :not_found
 
   defp find_heading_line(buf, line, total, target) do
-    case Buffer.line_at(buf, line) do
-      {:ok, text} ->
-        case extract_heading_text(text) do
-          {:ok, heading_text} ->
-            if String.downcase(heading_text) == target do
-              {:ok, line}
-            else
-              find_heading_line(buf, line + 1, total, target)
-            end
-
-          :not_heading ->
-            find_heading_line(buf, line + 1, total, target)
-        end
-
-      _ ->
-        find_heading_line(buf, line + 1, total, target)
+    with {:ok, text} <- Buffer.line_at(buf, line),
+         {:ok, heading_text} <- extract_heading_text(text),
+         true <- String.downcase(heading_text) == target do
+      {:ok, line}
+    else
+      _ -> find_heading_line(buf, line + 1, total, target)
     end
   end
 

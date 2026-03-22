@@ -1,6 +1,6 @@
 defmodule MingaOrg.Todo do
   @moduledoc """
-  TODO keyword cycling for org-mode headings.
+  Keyword cycling for org-mode headings (TODO/DONE states).
 
   Cycles the TODO keyword on the current heading line through the
   configured sequence. Default sequence: `TODO` -> `DONE` -> (none).

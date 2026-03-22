@@ -81,18 +81,18 @@ defmodule MingaOrg.LinkMarkup do
       {display_start, display_end, conceal_ranges} = link_regions(link)
 
       highlight = [{:highlight, line_num, display_start, display_end}]
-
-      conceals =
-        if cursor_line do
-          []
-        else
-          Enum.map(conceal_ranges, fn {from, to} ->
-            {:conceal, line_num, from, to}
-          end)
-        end
+      conceals = build_conceals(line_num, conceal_ranges, cursor_line)
 
       highlight ++ conceals
     end)
+  end
+
+  @spec build_conceals(non_neg_integer(), [{non_neg_integer(), non_neg_integer()}], boolean()) ::
+          [descriptor()]
+  defp build_conceals(_line_num, _ranges, true), do: []
+
+  defp build_conceals(line_num, ranges, false) do
+    Enum.map(ranges, fn {from, to} -> {:conceal, line_num, from, to} end)
   end
 
   # Compute the display region and conceal regions for a link.
