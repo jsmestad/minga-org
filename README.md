@@ -1,59 +1,87 @@
 # minga-org
 
-Org-mode support for the [Minga](https://github.com/jsmestad/minga) editor.
+**Org-mode for the [Minga](https://github.com/jsmestad/minga) editor.**
 
-## Features
+[API Docs](https://jsmestad.github.io/minga-org/) | [Minga Extension API](https://jsmestad.github.io/minga/extension-api.html) | [Issue Tracker](https://github.com/jsmestad/minga-org/issues)
 
-- **Syntax highlighting** via tree-sitter (headings, TODO keywords, tags, timestamps, code blocks, comments, properties, checkboxes, tables)
-- **TODO cycling** (`SPC m t`): cycles heading keyword through `TODO` -> `DONE` -> (none), with configurable keyword sequences
-- **Checkbox toggling** (`SPC m x`): toggles `- [ ]` <-> `- [x]` on the current line
-- **Heading promotion/demotion** (`SPC m h` / `SPC m l`): decrease/increase star count
-- **Heading reordering** (`SPC m k` / `SPC m j`): move heading and its subtree up/down
+minga-org brings the core org-mode workflow to Minga: headings, folding, TODO states, checkboxes, lists, links, tables, code blocks, capture, export, and pretty rendering. If you use Doom Emacs for org-mode, the keybindings will feel familiar.
 
-## Installation
+## Quick start
 
-Add to your Minga config (`~/.config/minga/init.exs`):
+Add to your Minga config (`~/.config/minga/config.exs`):
 
 ```elixir
-# From git (latest)
 extension :minga_org, git: "https://github.com/jsmestad/minga-org"
-
-# From Hex (pinned version)
-extension :minga_org, hex: "minga_org", version: "~> 0.1"
 ```
 
-Restart Minga or run `:ExtReload` to load the extension.
+Press `SPC h r` to reload. Open any `.org` file. That's it.
 
-## Configuration
+## What you get
 
-### Custom TODO keywords
+### Editing
+
+Press `SPC m` in an org file to see all available commands. The which-key popup shows everything; you don't need to memorize the table below.
+
+| Key | What it does |
+|-----|-------------|
+| `SPC m t` | Cycle TODO keyword (TODO → DONE → none) |
+| `SPC m x` | Toggle checkbox (`[ ]` ↔ `[x]`) |
+| `M-h` / `M-l` | Promote / demote heading |
+| `M-k` / `M-j` | Move heading + subtree up / down |
+| `TAB` / `S-TAB` | Fold heading / cycle all folds |
+| `RET` or `g x` | Follow link at cursor |
+| `SPC m T` | Jump to heading by tag |
+| `SPC m e` | Export via pandoc (HTML, PDF, Markdown, etc.) |
+| `SPC X` | Quick capture (works from any file) |
+
+In insert mode, `TAB` inside a table re-aligns columns and jumps to the next cell. `S-TAB` goes backward.
+
+### Rendering
+
+Org markup renders inline as you'd expect. `*bold*` shows **bold**, `/italic/` shows *italic*, `~code~` shows `code`. The delimiters hide on non-cursor lines so the text reads cleanly, then reappear when you move your cursor to that line for editing.
+
+Heading stars (`*`, `**`, `***`) are replaced with Unicode bullets (◉, ○, ◈, ◇) via the conceal system. List bullets get the same treatment.
+
+Links show their description text with the URL hidden: `[[https://example.com][Example]]` displays as underlined "Example".
+
+### Smart lists
+
+Hit Enter on a list item and the next line continues the list automatically. Unordered bullets reuse the same marker. Ordered lists increment the number. If you hit Enter on an empty bullet (just the marker, no text), the list ends and the bullet is removed.
+
+### Capture
+
+`SPC X` from anywhere in the editor. A picker shows your capture templates (TODO, Note, Journal by default). Select one, type a title, and the entry lands in the right file under the right heading. Configure your own templates:
 
 ```elixir
 extension :minga_org, git: "https://github.com/jsmestad/minga-org",
-  todo_keywords: ["TODO", "IN-PROGRESS", "BLOCKED", "DONE"]
+  capture_templates: [
+    %{key: "t", name: "TODO", target: "~/org/inbox.org", template: "* TODO %{title}"},
+    %{key: "m", name: "Meeting", target: "~/org/work.org", heading: "Meetings",
+      template: "* %{date} %{title}\n%{body}"}
+  ]
 ```
 
-The keyword sequence cycles in order, then back to no keyword.
+## Configuration
 
-## Keybindings
+All options go in your extension declaration. Defaults are shown:
 
-All bindings are under `SPC m` and only active in `.org` files:
+```elixir
+extension :minga_org, git: "https://github.com/jsmestad/minga-org",
+  conceal: true,                           # hide markup delimiters
+  pretty_bullets: true,                    # replace stars with Unicode bullets
+  heading_bullets: ["◉", "○", "◈", "◇"],  # bullets per heading depth
+  list_bullet: "•",                        # replacement for list markers
+  todo_keywords: ["TODO", "DONE"]          # keyword cycle sequence
+```
 
-| Key | Command | Description |
-|-----|---------|-------------|
-| `SPC m t` | `:org_cycle_todo` | Cycle TODO keyword |
-| `SPC m x` | `:org_toggle_checkbox` | Toggle checkbox |
-| `SPC m h` | `:org_promote_heading` | Promote heading (fewer stars) |
-| `SPC m l` | `:org_demote_heading` | Demote heading (more stars) |
-| `SPC m k` | `:org_move_heading_up` | Move heading/subtree up |
-| `SPC m j` | `:org_move_heading_down` | Move heading/subtree down |
+Set `conceal: false` to always show raw delimiters. Set `pretty_bullets: false` to keep plain `*` stars.
 
 ## Requirements
 
-- Minga editor with extension support (#211) and runtime grammar loading (#427)
-- A C compiler (`cc`, `gcc`, or `clang`) for first-time grammar compilation
+- **Minga** with extension support and runtime grammar loading
+- **A C compiler** (`cc`, `gcc`, or `clang`) for first-time grammar compilation
 
-The tree-sitter-org grammar is vendored in this repo and compiled into a shared library on first load. The compiled library is cached at `~/.local/share/minga/grammars/org.{dylib,so}`.
+The tree-sitter-org grammar is vendored in this repo. Minga compiles it into a shared library on first load and caches it at `~/.local/share/minga/grammars/`. Subsequent starts skip compilation.
 
 ## Development
 
@@ -64,11 +92,19 @@ mix deps.get
 mix test
 ```
 
-Tests cover the pure logic (TODO cycling, checkbox toggling, heading promotion/demotion). Integration tests that require a running Minga instance are in the main Minga repo.
+The extension compiles standalone for testing. `Minga.*` modules are available as a dev/test dependency for type checking and behaviour validation, but Minga's app doesn't start during tests.
 
-## Grammar
+```bash
+mix lint          # format + credo + compile + dialyzer
+mix test          # 310+ tests including property-based tests
+mix dialyzer      # full type checking across the Minga boundary
+```
 
-This extension vendors [tree-sitter-org](https://github.com/emiasims/tree-sitter-org) (language version 14). The highlight query maps org-mode constructs to standard tree-sitter capture names supported by Minga's theme system.
+### Architecture
+
+All org-mode features follow the same pattern: a pure-logic module (text parsing, transformation) paired with a thin editor integration layer (buffer reads/writes, command registration). The pure logic is tested extensively. The buffer integration uses an in-memory stub (`MingaOrg.Buffer.Stub`) that actually applies text edits, so integration tests verify real read-after-write sequences.
+
+For details, see the [API docs](https://jsmestad.github.io/minga-org/).
 
 ## License
 
