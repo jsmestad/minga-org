@@ -36,7 +36,47 @@ jobs:
 
       - run: mix deps.get
       - run: mix format --check-formatted
+      - run: mix credo --strict
       - run: mix compile
+
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: dev
+      MINGA_PATH: ../minga
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout Minga (for type resolution)
+        uses: actions/checkout@v4
+        with:
+          repository: jsmestad/minga
+          path: ../minga
+
+      - uses: erlef/setup-beam@v1
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: deps-dialyzer-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+          restore-keys: deps-dialyzer-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-
+
+      - name: Cache PLT
+        uses: actions/cache@v4
+        with:
+          path: _build/dev
+          key: plt-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+          restore-keys: plt-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-
+
+      - run: mix deps.get
+      - run: mix dialyzer
 
   test:
     name: Test
