@@ -1,7 +1,9 @@
 defmodule MingaOrg.CheckboxTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
   alias MingaOrg.Checkbox
+  alias MingaOrg.Generators
 
   describe "toggle_checkbox_text/1" do
     test "checks an unchecked checkbox" do
@@ -39,6 +41,18 @@ defmodule MingaOrg.CheckboxTest do
     test "preserves text after checkbox" do
       assert {:ok, "- [x] Buy milk @store :errand:"} =
                Checkbox.toggle_checkbox_text("- [ ] Buy milk @store :errand:")
+    end
+  end
+
+  describe "properties" do
+    property "toggling a stable checkbox twice returns to original" do
+      # Only [ ] and [x] are stable roundtrips. [-] and [X] normalize
+      # on the first toggle ([-] -> [x], [X] -> [ ]).
+      check all(line <- Generators.checkbox_line(statuses: [" ", "x"])) do
+        {:ok, toggled_once} = Checkbox.toggle_checkbox_text(line)
+        {:ok, toggled_twice} = Checkbox.toggle_checkbox_text(toggled_once)
+        assert toggled_twice == line
+      end
     end
   end
 end

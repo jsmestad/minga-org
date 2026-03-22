@@ -1,6 +1,8 @@
 defmodule MingaOrg.ListTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
+  alias MingaOrg.Generators
   alias MingaOrg.List
 
   describe "parse_line/1" do
@@ -230,6 +232,46 @@ defmodule MingaOrg.ListTest do
 
     test "returns line unchanged for non-list" do
       assert "hello" = List.exit_list_replacement("hello")
+    end
+  end
+
+  describe "properties" do
+    property "unordered list continuation preserves indent and bullet" do
+      check all(line <- Generators.unordered_list_line()) do
+        case List.continuation_action(line) do
+          {:continue, prefix} ->
+            # Continuation prefix should start with the same indent
+            original_indent = String.replace(line, ~r/\S.*$/, "")
+            assert String.starts_with?(prefix, original_indent)
+            # Prefix should end with a space (ready for typing)
+            assert String.ends_with?(prefix, " ")
+
+          :exit_list ->
+            :ok
+
+          :passthrough ->
+            :ok
+        end
+      end
+    end
+
+    property "ordered list continuation advances the number by 1" do
+      check all(line <- Generators.ordered_list_line()) do
+        case List.continuation_action(line) do
+          {:continue, prefix} ->
+            # Extract the number from the original line
+            [_, orig_num] = Regex.run(~r/(\d+)[.)]/, line)
+            # Extract the number from the continuation prefix
+            [_, next_num] = Regex.run(~r/(\d+)[.)]/, prefix)
+            assert String.to_integer(next_num) == String.to_integer(orig_num) + 1
+
+          :exit_list ->
+            :ok
+
+          :passthrough ->
+            :ok
+        end
+      end
     end
   end
 end

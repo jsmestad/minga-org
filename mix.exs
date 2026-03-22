@@ -9,6 +9,7 @@ defmodule MingaOrg.MixProject do
       app: :minga_org,
       version: @version,
       elixir: "~> 1.17",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       dialyzer: [
         plt_add_apps: [:mix],
@@ -23,6 +24,9 @@ defmodule MingaOrg.MixProject do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
@@ -34,6 +38,7 @@ defmodule MingaOrg.MixProject do
   defp deps do
     [
       {:minga, path: minga_path(), only: :dev},
+      {:stream_data, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
