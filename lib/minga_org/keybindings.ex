@@ -37,9 +37,7 @@ defmodule MingaOrg.Keybindings do
       {:normal, "g x", :org_follow_link, "Follow link", filetype: :org},
 
       # Export
-      {:normal, "SPC m e h", :org_export_html, "Export to HTML", filetype: :org},
-      {:normal, "SPC m e m", :org_export_markdown, "Export to Markdown", filetype: :org},
-      {:normal, "SPC m e p", :org_export_pdf, "Export to PDF", filetype: :org},
+      {:normal, "SPC m e", :org_export, "Export org file", filetype: :org},
 
       # Folding
       {:normal, "TAB", :org_fold_toggle, "Toggle heading fold", filetype: :org},
