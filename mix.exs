@@ -10,6 +10,10 @@ defmodule MingaOrg.MixProject do
       version: @version,
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
+      dialyzer: [
+        plt_add_apps: [:mix],
+        ignore_warnings: ".dialyzer_ignore.exs"
+      ],
       deps: deps(),
       aliases: aliases(),
       description: "Org-mode support for the Minga editor",
@@ -29,8 +33,15 @@ defmodule MingaOrg.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:minga, path: minga_path(), only: :dev},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
+  end
+
+  defp minga_path do
+    System.get_env("MINGA_PATH", "../minga")
   end
 
   defp package do
@@ -50,7 +61,12 @@ defmodule MingaOrg.MixProject do
 
   defp aliases do
     [
-      lint: ["format --check-formatted", "compile"]
+      lint: [
+        "format --check-formatted",
+        "credo --strict",
+        "compile",
+        "dialyzer"
+      ]
     ]
   end
 
