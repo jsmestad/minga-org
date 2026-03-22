@@ -5,11 +5,22 @@ defmodule MingaOrg.KeybindingsTest do
   alias MingaOrg.Keybindings
 
   describe "binding_definitions/0" do
-    test "every binding has filetype: :org" do
-      for {_mode, _key, _cmd, _desc, opts} <- Keybindings.binding_definitions() do
+    test "filetype-scoped bindings have filetype: :org" do
+      for {_mode, _key, cmd, _desc, opts} <- Keybindings.binding_definitions(),
+          opts != [] do
         assert Keyword.get(opts, :filetype) == :org,
-               "all org bindings must be scoped to filetype: :org"
+               "#{cmd} should be scoped to filetype: :org"
       end
+    end
+
+    test "global bindings have empty opts" do
+      global =
+        Keybindings.binding_definitions()
+        |> Enum.filter(fn {_mode, _key, _cmd, _desc, opts} -> opts == [] end)
+
+      assert length(global) == 1
+      [{_mode, _key, cmd, _desc, _opts}] = global
+      assert cmd == :org_capture
     end
 
     test "every binding is a {atom, string, atom, string, keyword} tuple" do
