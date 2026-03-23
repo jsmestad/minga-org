@@ -10,6 +10,7 @@ defmodule MingaOrg.Advice do
   alias MingaOrg.List
   alias MingaOrg.Markup
   alias MingaOrg.Pretty
+  alias MingaOrg.TagAnnotations
 
   @typedoc "An advice definition: {phase, command, function}."
   @type advice_def :: {:around | :after | :before, atom(), function()}
@@ -26,7 +27,8 @@ defmodule MingaOrg.Advice do
     around = [{:around, :insert_newline, &smart_newline/2}]
 
     after_advice =
-      for cmd <- refresh_commands, fun <- [&Markup.refresh/1, &Pretty.refresh/1] do
+      for cmd <- refresh_commands,
+          fun <- [&Markup.refresh/1, &Pretty.refresh/1, &TagAnnotations.refresh/1] do
         {:after, cmd, fun}
       end
 
