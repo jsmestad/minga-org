@@ -31,4 +31,8 @@ defmodule MingaOrg.ExportPicker do
   @impl true
   @spec on_cancel(map()) :: map()
   def on_cancel(state), do: state
+
+  @doc "Opens the export picker. MFA target for the `command/3` DSL macro."
+  @spec open(map()) :: map()
+  def open(state), do: Minga.Editor.PickerUI.open(state, __MODULE__)
 end

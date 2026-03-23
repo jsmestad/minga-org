@@ -63,4 +63,8 @@ defmodule MingaOrg.TagPicker do
       _ -> find_tagged_heading(buf, tag, line + 1, total)
     end
   end
+
+  @doc "Opens the tag picker. MFA target for the `command/3` DSL macro."
+  @spec open(map()) :: map()
+  def open(state), do: Minga.Editor.PickerUI.open(state, __MODULE__)
 end
