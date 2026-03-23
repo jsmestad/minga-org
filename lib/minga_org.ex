@@ -39,6 +39,10 @@ defmodule MingaOrg do
     default: ["TODO", "DONE"],
     description: "TODO keyword cycle sequence"
 
+  option :tag_colors, :any,
+    default: nil,
+    description: "Map of tag name to hex color for pill annotations (nil uses auto-palette)"
+
   option :capture_templates, :any,
     default: nil,
     description: "Capture template definitions (nil uses built-in defaults)"
