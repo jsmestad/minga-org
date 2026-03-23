@@ -10,8 +10,6 @@ defmodule MingaOrg.Export do
   conversion.
   """
 
-  alias MingaOrg.Buffer
-
   @default_formats [
     {"html", "HTML"},
     {"markdown", "Markdown"},

@@ -1,14 +1,9 @@
 defmodule MingaOrg.CommandsTest do
   use ExUnit.Case, async: true
 
-  alias MingaOrg.Commands
-
-  @default_keywords ["TODO", "DONE"]
-
-  describe "command_definitions/1" do
+  describe "__command_schema__/0" do
     test "returns all expected command names" do
-      defs = Commands.command_definitions(@default_keywords)
-      names = Enum.map(defs, &elem(&1, 0))
+      names = MingaOrg.__command_schema__() |> Enum.map(&elem(&1, 0))
 
       assert :org_capture in names
       assert :org_cycle_todo in names
@@ -26,23 +21,25 @@ defmodule MingaOrg.CommandsTest do
       assert :org_export in names
     end
 
-    test "every definition is a {atom, string, function} tuple" do
-      for {name, description, fun} <- Commands.command_definitions(@default_keywords) do
+    test "every definition has {name, description, opts} shape with execute MFA" do
+      for {name, description, opts} <- MingaOrg.__command_schema__() do
         assert is_atom(name), "expected atom name, got: #{inspect(name)}"
         assert is_binary(description), "expected string description for #{name}"
-        assert is_function(fun, 1), "expected arity-1 function for #{name}"
+        {mod, fun} = Keyword.fetch!(opts, :execute)
+        assert is_atom(mod), "expected atom module in execute for #{name}"
+        assert is_atom(fun), "expected atom function in execute for #{name}"
       end
     end
 
     test "all command names are prefixed with :org_" do
-      for {name, _desc, _fun} <- Commands.command_definitions(@default_keywords) do
+      for {name, _desc, _opts} <- MingaOrg.__command_schema__() do
         assert name |> Atom.to_string() |> String.starts_with?("org_"),
                "#{name} should start with org_"
       end
     end
 
     test "command names are unique" do
-      names = Enum.map(Commands.command_definitions(@default_keywords), &elem(&1, 0))
+      names = MingaOrg.__command_schema__() |> Enum.map(&elem(&1, 0))
       assert length(names) == length(Enum.uniq(names))
     end
   end

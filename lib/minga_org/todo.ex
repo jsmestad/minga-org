@@ -19,6 +19,22 @@ defmodule MingaOrg.Todo do
   @doc """
   Cycles the TODO keyword on the current heading line.
 
+  Reads `todo_keywords` from the extension's config at call time via
+  `Minga.Config.Options.get_extension_option/2`. This is the MFA target
+  for the `command/3` DSL macro.
+  """
+  @spec cycle(map()) :: map()
+  def cycle(state) do
+    keywords =
+      Minga.Config.Options.get_extension_option(:minga_org, :todo_keywords) ||
+        ["TODO", "DONE"]
+
+    cycle(state, keywords)
+  end
+
+  @doc """
+  Cycles the TODO keyword on the current heading line.
+
   `keywords` is the ordered list of TODO states (e.g., `["TODO", "DONE"]`).
   If the current line is not a heading, returns state unchanged.
   """

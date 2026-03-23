@@ -50,4 +50,8 @@ defmodule MingaOrg.CapturePicker do
     # Config.Options not available (test env or standalone compilation)
     _ -> Capture.default_templates()
   end
+
+  @doc "Opens the capture picker. MFA target for the `command/3` DSL macro."
+  @spec open(map()) :: map()
+  def open(state), do: Minga.Editor.PickerUI.open(state, __MODULE__)
 end
