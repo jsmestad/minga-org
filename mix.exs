@@ -78,7 +78,53 @@ defmodule MingaOrg.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"]
+      extras: ["README.md"],
+      groups_for_modules: [
+        "Extension Entry": [MingaOrg],
+        "Editing Commands": [
+          MingaOrg.Checkbox,
+          MingaOrg.Heading,
+          MingaOrg.Todo,
+          MingaOrg.TableCommands,
+          MingaOrg.TagCommands
+        ],
+        Rendering: [
+          MingaOrg.Markup,
+          MingaOrg.LinkMarkup,
+          MingaOrg.Pretty,
+          MingaOrg.Inline
+        ],
+        "Links & Navigation": [
+          MingaOrg.Link,
+          MingaOrg.LinkFollow
+        ],
+        "Capture & Export": [
+          MingaOrg.Capture,
+          MingaOrg.CapturePicker,
+          MingaOrg.CapturePrompt,
+          MingaOrg.Export,
+          MingaOrg.ExportPicker
+        ],
+        Pickers: [
+          MingaOrg.TagPicker
+        ],
+        Infrastructure: [
+          MingaOrg.Buffer,
+          MingaOrg.Buffer.Minga,
+          MingaOrg.Commands,
+          MingaOrg.Keybindings,
+          MingaOrg.Advice,
+          MingaOrg.Grammar
+        ],
+        "Pure Data": [
+          MingaOrg.Inline.Span,
+          MingaOrg.Link.Parsed,
+          MingaOrg.Capture.Template,
+          MingaOrg.Table,
+          MingaOrg.Tags,
+          MingaOrg.List
+        ]
+      ]
     ]
   end
 end

@@ -113,3 +113,49 @@ jobs:
 
       - run: mix deps.get
       - run: mix test
+
+  docs:
+    name: Deploy Docs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      MIX_ENV: dev
+      MINGA_PATH: ../minga
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone Minga
+        run: |
+          git clone --depth 1 https://${{ github.token }}@github.com/jsmestad/minga.git ../minga
+          rm -rf ../minga/zig
+
+      - uses: erlef/setup-beam@v1
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: deps-docs-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+          restore-keys: deps-docs-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-
+
+      - run: mix deps.get
+      - run: mix docs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: doc/
+      - id: deployment
+        uses: actions/deploy-pages@v4
