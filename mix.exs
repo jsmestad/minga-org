@@ -78,6 +78,7 @@ defmodule MingaOrg.MixProject do
   defp docs do
     [
       main: "readme",
+      assets: %{"assets" => "assets"},
       extras: ["README.md"],
       groups_for_modules: [
         "Extension Entry": [MingaOrg],

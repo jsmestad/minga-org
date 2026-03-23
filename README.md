@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/minga_dark-transparent.svg" alt="Minga logo" width="128">
+</p>
+
 # minga-org
 
 **Org-mode for the [Minga](https://github.com/jsmestad/minga) editor.**
