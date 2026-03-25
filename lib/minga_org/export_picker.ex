@@ -6,7 +6,7 @@ defmodule MingaOrg.ExportPicker do
   Opened via `SPC m e`.
   """
 
-  @behaviour Minga.Picker.Source
+  @behaviour Minga.UI.Picker.Source
 
   alias MingaOrg.Export
 
@@ -15,15 +15,15 @@ defmodule MingaOrg.ExportPicker do
   def title, do: "Export org file"
 
   @impl true
-  @spec candidates(term()) :: [Minga.Picker.Item.t()]
+  @spec candidates(term()) :: [Minga.UI.Picker.Item.t()]
   def candidates(_context) do
     Enum.map(Export.formats(), fn {format_id, display_name} ->
-      %Minga.Picker.Item{id: format_id, label: display_name, description: format_id}
+      %Minga.UI.Picker.Item{id: format_id, label: display_name, description: format_id}
     end)
   end
 
   @impl true
-  @spec on_select(Minga.Picker.Item.t(), map()) :: map()
+  @spec on_select(Minga.UI.Picker.Item.t(), map()) :: map()
   def on_select(%{id: format}, state) do
     Export.export_command(state, format)
   end

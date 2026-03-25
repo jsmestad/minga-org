@@ -7,7 +7,7 @@ defmodule MingaOrg.CapturePicker do
   Opened via `SPC X`.
   """
 
-  @behaviour Minga.Picker.Source
+  @behaviour Minga.UI.Picker.Source
 
   alias MingaOrg.Capture
 
@@ -16,11 +16,11 @@ defmodule MingaOrg.CapturePicker do
   def title, do: "Capture template"
 
   @impl true
-  @spec candidates(term()) :: [Minga.Picker.Item.t()]
+  @spec candidates(term()) :: [Minga.UI.Picker.Item.t()]
   def candidates(_context) do
     templates()
     |> Enum.map(fn template ->
-      %Minga.Picker.Item{
+      %Minga.UI.Picker.Item{
         id: template,
         label: "[#{template.key}] #{template.name}",
         description: template.target
@@ -29,7 +29,7 @@ defmodule MingaOrg.CapturePicker do
   end
 
   @impl true
-  @spec on_select(Minga.Picker.Item.t(), map()) :: map()
+  @spec on_select(Minga.UI.Picker.Item.t(), map()) :: map()
   def on_select(%{id: template}, state) do
     Minga.Editor.PromptUI.open(state, MingaOrg.CapturePrompt, context: %{template: template})
   end

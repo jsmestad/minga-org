@@ -7,7 +7,7 @@ defmodule MingaOrg.TagPicker do
   Opened via `SPC m T`.
   """
 
-  @behaviour Minga.Picker.Source
+  @behaviour Minga.UI.Picker.Source
 
   alias MingaOrg.Buffer
   alias MingaOrg.TagCommands
@@ -18,18 +18,18 @@ defmodule MingaOrg.TagPicker do
   def title, do: "Jump to tag"
 
   @impl true
-  @spec candidates(term()) :: [Minga.Picker.Item.t()]
+  @spec candidates(term()) :: [Minga.UI.Picker.Item.t()]
   def candidates(%{buffers: %{active: buf}}) do
     TagCommands.all_tags_in_buffer(buf)
     |> Enum.map(fn tag ->
-      %Minga.Picker.Item{id: tag, label: ":#{tag}:"}
+      %Minga.UI.Picker.Item{id: tag, label: ":#{tag}:"}
     end)
   end
 
   def candidates(_), do: []
 
   @impl true
-  @spec on_select(Minga.Picker.Item.t(), map()) :: map()
+  @spec on_select(Minga.UI.Picker.Item.t(), map()) :: map()
   def on_select(%{id: tag}, state) do
     buf = state.buffers.active
     total = Buffer.line_count(buf)
