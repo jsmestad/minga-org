@@ -61,7 +61,7 @@ defmodule MingaOrg.Heading do
 
   @spec transform_heading(map(), (String.t(), String.t() -> {String.t(), String.t()})) :: map()
   defp transform_heading(state, transform_fn) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, line_num) do
@@ -86,7 +86,7 @@ defmodule MingaOrg.Heading do
 
   @spec swap_heading(map(), :up | :down) :: map()
   defp swap_heading(state, direction) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
     total = Buffer.line_count(buf)
 

@@ -23,7 +23,7 @@ defmodule MingaOrg.Checkbox do
   """
   @spec toggle(map()) :: map()
   def toggle(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, line_num) do

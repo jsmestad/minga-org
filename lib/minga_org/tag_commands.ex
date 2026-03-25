@@ -21,7 +21,7 @@ defmodule MingaOrg.TagCommands do
   """
   @spec toggle_tag_on_heading(map(), String.t()) :: map()
   def toggle_tag_on_heading(state, tag) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
     with {:ok, heading_line_num} <- find_heading_line(buf, line_num),

@@ -40,7 +40,7 @@ defmodule MingaOrg.Todo do
   """
   @spec cycle(map(), [String.t()]) :: map()
   def cycle(state, keywords) when is_list(keywords) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, line_num) do

@@ -50,7 +50,7 @@ defmodule MingaOrg.Pretty do
   """
   @spec refresh(map()) :: map()
   def refresh(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
 
     if Buffer.filetype(buf) == :org do
       apply_decorations(buf)

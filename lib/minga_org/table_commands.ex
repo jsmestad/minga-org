@@ -17,7 +17,7 @@ defmodule MingaOrg.TableCommands do
   """
   @spec tab(map()) :: map()
   def tab(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {cursor_line, cursor_col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, cursor_line) do
@@ -39,7 +39,7 @@ defmodule MingaOrg.TableCommands do
   """
   @spec shift_tab(map()) :: map()
   def shift_tab(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {cursor_line, cursor_col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, cursor_line) do

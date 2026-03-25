@@ -44,7 +44,7 @@ defmodule MingaOrg.Folding do
   """
   @spec toggle_at_cursor(map()) :: map()
   def toggle_at_cursor(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, _col} = Buffer.cursor(buf)
 
     case find_heading_at_or_above(buf, line_num) do
@@ -66,7 +66,7 @@ defmodule MingaOrg.Folding do
   """
   @spec cycle_global(map()) :: map()
   def cycle_global(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     ranges = fold_ranges_for_buffer(buf)
     state = ensure_fold_ranges(state, ranges)
 

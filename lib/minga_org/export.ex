@@ -86,7 +86,7 @@ defmodule MingaOrg.Export do
   """
   @spec export_command(map(), String.t()) :: map()
   def export_command(state, format) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
 
     case get_file_path(buf) do
       {:ok, path} ->

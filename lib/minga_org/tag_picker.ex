@@ -31,7 +31,7 @@ defmodule MingaOrg.TagPicker do
   @impl true
   @spec on_select(Minga.UI.Picker.Item.t(), map()) :: map()
   def on_select(%{id: tag}, state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     total = Buffer.line_count(buf)
 
     case find_tagged_heading(buf, tag, 0, total) do

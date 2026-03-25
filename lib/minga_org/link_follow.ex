@@ -19,7 +19,7 @@ defmodule MingaOrg.LinkFollow do
   """
   @spec follow(map()) :: map()
   def follow(state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
     {line_num, col} = Buffer.cursor(buf)
 
     case Buffer.line_at(buf, line_num) do

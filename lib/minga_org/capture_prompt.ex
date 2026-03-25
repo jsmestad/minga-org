@@ -7,7 +7,7 @@ defmodule MingaOrg.CapturePrompt do
   to the target file.
   """
 
-  @behaviour Minga.Prompt.Handler
+  @behaviour Minga.UI.Prompt.Handler
 
   alias MingaOrg.Capture
 

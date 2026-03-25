@@ -54,7 +54,7 @@ defmodule MingaOrg.Advice do
   @doc false
   @spec smart_newline((map() -> map()), map()) :: map()
   def smart_newline(execute, state) do
-    buf = state.buffers.active
+    buf = state.workspace.buffers.active
 
     if Buffer.filetype(buf) == :org do
       handle_org_newline(execute, state, buf)
