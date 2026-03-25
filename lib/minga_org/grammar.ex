@@ -33,7 +33,7 @@ defmodule MingaOrg.Grammar do
         opts
       end
 
-    Minga.TreeSitter.register_grammar("org", source_dir, opts)
+    Minga.Language.TreeSitter.register_grammar("org", source_dir, opts)
   end
 
   @doc "Returns the path to the vendored grammar source directory."
