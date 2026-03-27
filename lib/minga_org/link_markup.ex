@@ -48,7 +48,7 @@ defmodule MingaOrg.LinkMarkup do
     descriptors = compute_descriptors(lines, cursor_line)
 
     Buffer.batch_decorations(buf, fn decs ->
-      decs = Minga.Buffer.Decorations.remove_group(decs, @group)
+      decs = Minga.Core.Decorations.remove_group(decs, @group)
 
       Enum.reduce(descriptors, decs, fn desc, decs ->
         apply_descriptor(decs, desc)
@@ -129,7 +129,7 @@ defmodule MingaOrg.LinkMarkup do
   @spec apply_descriptor(struct(), descriptor()) :: struct()
   defp apply_descriptor(decs, {:highlight, line_num, from, to}) do
     {_id, decs} =
-      Minga.Buffer.Decorations.add_highlight(decs, {line_num, from}, {line_num, to},
+      Minga.Core.Decorations.add_highlight(decs, {line_num, from}, {line_num, to},
         style: @link_style,
         group: @group
       )
@@ -139,7 +139,7 @@ defmodule MingaOrg.LinkMarkup do
 
   defp apply_descriptor(decs, {:conceal, line_num, from, to}) do
     {_id, decs} =
-      Minga.Buffer.Decorations.add_conceal(decs, {line_num, from}, {line_num, to}, group: @group)
+      Minga.Core.Decorations.add_conceal(decs, {line_num, from}, {line_num, to}, group: @group)
 
     decs
   end

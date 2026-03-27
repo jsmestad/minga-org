@@ -16,6 +16,6 @@ defmodule MingaOrg.TestHelpers do
   @doc "Builds a minimal editor state map pointing to the given buffer."
   @spec make_state(pid()) :: map()
   def make_state(buf_pid) do
-    %{buffers: %{active: buf_pid}}
+    %{workspace: %{buffers: %{active: buf_pid}}}
   end
 end

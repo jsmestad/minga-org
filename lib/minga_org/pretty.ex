@@ -73,12 +73,12 @@ defmodule MingaOrg.Pretty do
     descriptors = compute_decorations(lines, cursor_line)
 
     Buffer.batch_decorations(buf, fn decs ->
-      decs = Minga.Buffer.Decorations.remove_group(decs, @group)
+      decs = Minga.Core.Decorations.remove_group(decs, @group)
 
       Enum.reduce(descriptors, decs, fn {:conceal_replace, line, start_col, end_col, replacement},
                                         decs ->
         {_id, decs} =
-          Minga.Buffer.Decorations.add_conceal(decs, {line, start_col}, {line, end_col},
+          Minga.Core.Decorations.add_conceal(decs, {line, start_col}, {line, end_col},
             replacement: replacement,
             group: @group
           )

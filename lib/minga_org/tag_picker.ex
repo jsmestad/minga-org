@@ -19,7 +19,7 @@ defmodule MingaOrg.TagPicker do
 
   @impl true
   @spec candidates(term()) :: [Minga.UI.Picker.Item.t()]
-  def candidates(%{buffers: %{active: buf}}) do
+  def candidates(%{workspace: %{buffers: %{active: buf}}}) do
     TagCommands.all_tags_in_buffer(buf)
     |> Enum.map(fn tag ->
       %Minga.UI.Picker.Item{id: tag, label: ":#{tag}:"}

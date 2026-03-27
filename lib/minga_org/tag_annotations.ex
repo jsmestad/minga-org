@@ -98,7 +98,7 @@ defmodule MingaOrg.TagAnnotations do
     descriptors = compute_descriptors(lines, cursor_line, config)
 
     Buffer.batch_decorations(buf, fn decs ->
-      decs = Minga.Buffer.Decorations.remove_group(decs, @group)
+      decs = Minga.Core.Decorations.remove_group(decs, @group)
 
       Enum.reduce(descriptors, decs, fn desc, decs ->
         apply_descriptor(decs, desc)
@@ -198,7 +198,7 @@ defmodule MingaOrg.TagAnnotations do
   @spec apply_descriptor(struct(), descriptor()) :: struct()
   defp apply_descriptor(decs, {:conceal, line_num, start_col, end_col}) do
     {_id, decs} =
-      Minga.Buffer.Decorations.add_conceal(decs, {line_num, start_col}, {line_num, end_col},
+      Minga.Core.Decorations.add_conceal(decs, {line_num, start_col}, {line_num, end_col},
         group: @group
       )
 
@@ -207,7 +207,7 @@ defmodule MingaOrg.TagAnnotations do
 
   defp apply_descriptor(decs, {:annotation, line_num, text, bg, fg}) do
     {_id, decs} =
-      Minga.Buffer.Decorations.add_annotation(decs, line_num, text,
+      Minga.Core.Decorations.add_annotation(decs, line_num, text,
         kind: :inline_pill,
         bg: bg,
         fg: fg,
