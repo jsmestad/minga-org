@@ -13,7 +13,7 @@ defmodule MingaOrg.CaptureIntegrationTest do
 
     test "each candidate is a Picker.Item with template as id" do
       for item <- CapturePicker.candidates(nil) do
-        assert %Minga.Picker.Item{} = item
+        assert %Minga.UI.Picker.Item{} = item
         assert %Capture.Template{} = item.id
         assert is_binary(item.label)
         assert is_binary(item.description)

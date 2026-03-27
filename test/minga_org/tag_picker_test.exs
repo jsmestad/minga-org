@@ -39,7 +39,7 @@ defmodule MingaOrg.TagPickerTest do
       state = make_state(buf)
       [item] = TagPicker.candidates(state)
 
-      assert %Minga.Picker.Item{} = item
+      assert %Minga.UI.Picker.Item{} = item
       assert item.id == "work"
       assert item.label == ":work:"
     end

@@ -20,7 +20,7 @@ defmodule MingaOrg.ExportPickerTest do
 
     test "each candidate is a Picker.Item struct" do
       for item <- ExportPicker.candidates(nil) do
-        assert %Minga.Picker.Item{} = item
+        assert %Minga.UI.Picker.Item{} = item
         assert is_binary(item.label)
         assert is_binary(item.description)
       end

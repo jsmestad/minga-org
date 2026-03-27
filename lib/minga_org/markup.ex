@@ -62,7 +62,7 @@ defmodule MingaOrg.Markup do
 
     # Apply decorations in a single batch (action)
     Buffer.batch_decorations(buf, fn decs ->
-      decs = Minga.Buffer.Decorations.remove_group(decs, @group)
+      decs = Minga.Core.Decorations.remove_group(decs, @group)
       apply_descriptors(decs, descriptors)
     end)
   end
@@ -125,7 +125,7 @@ defmodule MingaOrg.Markup do
     end_pos = {line_num, span.content_end}
 
     {_id, decs} =
-      Minga.Buffer.Decorations.add_highlight(decs, start_pos, end_pos,
+      Minga.Core.Decorations.add_highlight(decs, start_pos, end_pos,
         style: style,
         group: @group
       )
@@ -138,7 +138,7 @@ defmodule MingaOrg.Markup do
     end_pos = {line_num, col + 1}
 
     {_id, decs} =
-      Minga.Buffer.Decorations.add_conceal(decs, start_pos, end_pos, group: @group)
+      Minga.Core.Decorations.add_conceal(decs, start_pos, end_pos, group: @group)
 
     decs
   end
